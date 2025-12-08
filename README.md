@@ -1,4 +1,4 @@
-\flow Engine</h1>
+<h1 align="center">🧠 Minimal Agent Workflow Engine</h1>
 <p align="center">FastAPI-based tool graph engine for stateful automation and AI workflows</p>
 
 <p align="center">
