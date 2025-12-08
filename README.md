@@ -13,10 +13,13 @@ It supports **state mutation, branching, looping, and execution logging**, makin
 
 ---
 
+<img width="1620" height="639" alt="image" src="https://github.com/user-attachments/assets/9c2094b7-ca6d-4e2d-839c-5fe1e427f114" />
+<img width="1284" height="416" alt="image" src="https://github.com/user-attachments/assets/db0db3fc-4f20-4d68-a731-5163b5b91ace" />
+
+
 ## ▶️ How To Run
 
 ```bash
 pip install -r requirements.txt
 uvicorn app.main:app --reload
-<img width="1620" height="639" alt="image" src="https://github.com/user-attachments/assets/9c2094b7-ca6d-4e2d-839c-5fe1e427f114" />
-<img width="1284" height="416" alt="image" src="https://github.com/user-attachments/assets/db0db3fc-4f20-4d68-a731-5163b5b91ace" />
+
