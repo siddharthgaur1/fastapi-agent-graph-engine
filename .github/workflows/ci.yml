@@ -21,4 +21,4 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
       - run: pip install -r requirements.txt pytest ruff==0.16.0
       - run: ruff check . --ignore E501
-      - run: pytest tests/ -v
+      - run: python -m pytest tests/ -v
