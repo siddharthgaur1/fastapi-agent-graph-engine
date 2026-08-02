@@ -1,9 +1,10 @@
+from __future__ import annotations
 
 from copy import deepcopy
-from datetime import datetime
-from typing import Any, Dict, List, Tuple, Optional
+from datetime import datetime, timezone
+from typing import Any
 
-from .models import Graph, NodeConfig, StepLog, LoopConfig
+from .models import Graph, LoopConfig, NodeConfig, StepLog
 from .tools import tool_registry
 
 
@@ -23,7 +24,7 @@ def _compare(a: Any, op: str, b: Any) -> bool:
     raise ValueError(f"Unsupported operator {op}")
 
 
-def _evaluate_loop_condition(state: Dict[str, Any], loop: LoopConfig) -> bool:
+def _evaluate_loop_condition(state: dict[str, Any], loop: LoopConfig) -> bool:
     """Return True if loop condition is satisfied (i.e., we should stop looping)."""
     value = state.get(loop.condition_key)
     return _compare(value, loop.operator, loop.target_value)
@@ -31,10 +32,10 @@ def _evaluate_loop_condition(state: Dict[str, Any], loop: LoopConfig) -> bool:
 
 def _run_single_node(
     node: NodeConfig,
-    state: Dict[str, Any],
+    state: dict[str, Any],
     step_index: int,
-    loop_iteration: Optional[int] = None,
-) -> Tuple[Dict[str, Any], StepLog]:
+    loop_iteration: int | None = None,
+) -> tuple[dict[str, Any], StepLog]:
     """Execute a single node: call its tool and produce a log entry."""
     tool = tool_registry.get(node.tool)
     updated_state = tool(state)
@@ -46,12 +47,12 @@ def _run_single_node(
         loop_iteration=loop_iteration,
         state_snapshot=deepcopy(updated_state),
         message=None,
-        timestamp=datetime.utcnow().isoformat() + "Z",
+        timestamp=datetime.now(timezone.utc).isoformat(),
     )
     return updated_state, log
 
 
-def execute_graph(graph: Graph, initial_state: Dict[str, Any]) -> Tuple[Dict[str, Any], List[StepLog]]:
+def execute_graph(graph: Graph, initial_state: dict[str, Any]) -> tuple[dict[str, Any], list[StepLog]]:
     """
     Run the graph from start_node_id until there is no next node.
 
@@ -61,9 +62,9 @@ def execute_graph(graph: Graph, initial_state: Dict[str, Any]) -> Tuple[Dict[str
       * looping via node.loop: run node until condition is met or max_iterations
     """
     state = deepcopy(initial_state)
-    logs: List[StepLog] = []
+    logs: list[StepLog] = []
 
-    current_node_id: Optional[str] = graph.start_node_id
+    current_node_id: str | None = graph.start_node_id
     step_index = 0
 
     while current_node_id is not None:
@@ -115,7 +116,7 @@ def execute_graph(graph: Graph, initial_state: Dict[str, Any]) -> Tuple[Dict[str
         step_index += 1
 
         # Decide next node: branching if configured
-        next_node_id: Optional[str] = None
+        next_node_id: str | None = None
         if node.branch_on and node.branches:
             key = node.branch_on
             value = state.get(key)

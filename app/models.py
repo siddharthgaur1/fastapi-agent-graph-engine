@@ -1,7 +1,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Literal, Union
+from typing import Any, Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -10,9 +11,9 @@ class LoopConfig(BaseModel):
 
     condition_key: str
     operator: Literal["<", "<=", ">", ">=", "==", "!="]
-    target_value: Union[int, float, str, bool]
+    target_value: int | float | str | bool
     max_iterations: int = 10
-    next_on_break: Optional[str] = None  # optional next node when loop ends
+    next_on_break: str | None = None  # optional next node when loop ends
 
 
 class NodeConfig(BaseModel):
@@ -20,16 +21,16 @@ class NodeConfig(BaseModel):
 
     id: str
     tool: str  # name of tool to call
-    next: Optional[str] = None  # default next node
-    branch_on: Optional[str] = None  # key in state to branch on
-    branches: Optional[Dict[str, str]] = None  # value -> next node id
-    loop: Optional[LoopConfig] = None  # optional loop behaviour
+    next: str | None = None  # default next node
+    branch_on: str | None = None  # key in state to branch on
+    branches: dict[str, str] | None = None  # value -> next node id
+    loop: LoopConfig | None = None  # optional loop behaviour
 
 
 class GraphCreateRequest(BaseModel):
-    nodes: List[NodeConfig]
+    nodes: list[NodeConfig]
     start_node_id: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 class GraphCreateResponse(BaseModel):
@@ -38,42 +39,42 @@ class GraphCreateResponse(BaseModel):
 
 class Graph(BaseModel):
     id: str
-    nodes: Dict[str, NodeConfig]
+    nodes: dict[str, NodeConfig]
     start_node_id: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class GraphRunRequest(BaseModel):
     graph_id: str
-    initial_state: Dict[str, Any] = Field(default_factory=dict)
+    initial_state: dict[str, Any] = Field(default_factory=dict)
 
 
 class StepLog(BaseModel):
     step_index: int
     node_id: str
     tool: str
-    loop_iteration: Optional[int] = None
-    state_snapshot: Dict[str, Any]
-    message: Optional[str] = None
+    loop_iteration: int | None = None
+    state_snapshot: dict[str, Any]
+    message: str | None = None
     timestamp: str
 
 
 class GraphRunResponse(BaseModel):
     run_id: str
-    final_state: Dict[str, Any]
-    log: List[StepLog]
+    final_state: dict[str, Any]
+    log: list[StepLog]
 
 
 class Run(BaseModel):
     id: str
     graph_id: str
-    state: Dict[str, Any]
+    state: dict[str, Any]
     finished: bool = False
-    log: List[StepLog] = Field(default_factory=list)
+    log: list[StepLog] = Field(default_factory=list)
 
 
 class RunStateResponse(BaseModel):
     run_id: str
-    state: Dict[str, Any]
+    state: dict[str, Any]
     finished: bool
-    log: List[StepLog]
+    log: list[StepLog]

@@ -1,6 +1,6 @@
+from __future__ import annotations
 
-from typing import Dict
 from .models import Graph, Run
 
-GRAPHS: Dict[str, Graph] = {}
-RUNS: Dict[str, Run] = {}
+GRAPHS: dict[str, Graph] = {}
+RUNS: dict[str, Run] = {}

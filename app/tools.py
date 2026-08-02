@@ -1,19 +1,21 @@
+from __future__ import annotations
 
-from typing import Any, Callable, Dict, List
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
 class ToolRegistry:
-    tools: Dict[str, Callable[[Dict[str, Any]], Dict[str, Any]]]
+    tools: dict[str, Callable[[dict[str, Any]], dict[str, Any]]]
 
     def __init__(self) -> None:
         self.tools = {}
 
-    def register(self, name: str, func: Callable[[Dict[str, Any]], Dict[str, Any]]) -> None:
+    def register(self, name: str, func: Callable[[dict[str, Any]], dict[str, Any]]) -> None:
         self.tools[name] = func
 
-    def get(self, name: str) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
+    def get(self, name: str) -> Callable[[dict[str, Any]], dict[str, Any]]:
         if name not in self.tools:
             raise KeyError(f"Tool '{name}' not registered")
         return self.tools[name]
@@ -28,7 +30,7 @@ tool_registry = ToolRegistry()
 # -----------------------------
 
 
-def split_text_into_chunks(state: Dict[str, Any]) -> Dict[str, Any]:
+def split_text_into_chunks(state: dict[str, Any]) -> dict[str, Any]:
     """
     Input:
         state["input_text"]: str
@@ -39,7 +41,7 @@ def split_text_into_chunks(state: Dict[str, Any]) -> Dict[str, Any]:
     text: str = state.get("input_text", "")
     chunk_size: int = int(state.get("chunk_size", 300))
 
-    chunks: List[str] = []
+    chunks: list[str] = []
     current = 0
     while current < len(text):
         chunks.append(text[current : current + chunk_size])
@@ -50,7 +52,7 @@ def split_text_into_chunks(state: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
-def summarize_chunks(state: Dict[str, Any]) -> Dict[str, Any]:
+def summarize_chunks(state: dict[str, Any]) -> dict[str, Any]:
     """
     Very naive summarizer: takes first N words of each chunk.
     Input:
@@ -62,7 +64,7 @@ def summarize_chunks(state: Dict[str, Any]) -> Dict[str, Any]:
     chunks = state.get("chunks", [])
     max_words = int(state.get("chunk_summary_words", 30))
 
-    summaries: List[str] = []
+    summaries: list[str] = []
     for chunk in chunks:
         words = chunk.split()
         short = " ".join(words[:max_words])
@@ -72,7 +74,7 @@ def summarize_chunks(state: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
-def merge_summaries(state: Dict[str, Any]) -> Dict[str, Any]:
+def merge_summaries(state: dict[str, Any]) -> dict[str, Any]:
     """
     Input:
         state["chunk_summaries"]: List[str]
@@ -86,7 +88,7 @@ def merge_summaries(state: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
-def refine_summary(state: Dict[str, Any]) -> Dict[str, Any]:
+def refine_summary(state: dict[str, Any]) -> dict[str, Any]:
     """
     Refines the summary by gradually shrinking it.
     - On each call, it will reduce the number of words by a factor until
@@ -121,7 +123,7 @@ def refine_summary(state: Dict[str, Any]) -> Dict[str, Any]:
     return state
 
 
-def lowercase_text(state: Dict[str, Any]) -> Dict[str, Any]:
+def lowercase_text(state: dict[str, Any]) -> dict[str, Any]:
     """Simple generic tool: lowercase the input_text into lowercase_text."""
     text = state.get("input_text", "")
     state["lowercase_text"] = text.lower()
