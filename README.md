@@ -132,7 +132,14 @@ tool_registry.register("my_tool", my_tool)
 
 Reference it from a `NodeConfig.tool` field and it's usable in any graph.
 
-## Known limitations
+## Results
+
+The "Try it: a real run, not a mockup" section above is the only measured
+result in this repo — a live request against a running instance, not a
+mockup, converging in exactly 4 loop iterations. There's no broader
+benchmark (latency, throughput) yet — see Limitations.
+
+## Limitations
 
 - **In-memory state only** (`app/store.py` is a pair of plain dicts) — graphs
   and run history are lost on restart. Fine for a demo/prototype engine, not
